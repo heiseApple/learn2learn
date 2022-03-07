@@ -81,7 +81,7 @@ def main():
 
     trainer = pl.Trainer.from_argparse_args(
         args,
-        gpus=1,
+        gpus=0,
         accumulate_grad_batches=args.meta_batch_size,
         callbacks=[
             l2l.utils.lightning.TrackTestAccuracyCallback(),

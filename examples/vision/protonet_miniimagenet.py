@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import argparse
 import numpy as np
 
@@ -30,7 +28,7 @@ class Convnet(nn.Module):
     def __init__(self, x_dim=3, hid_dim=64, z_dim=64):
         super().__init__()
         self.encoder = l2l.vision.models.CNN4Backbone(
-            hidden=hid_dim,
+            hidden_size=hid_dim,
             channels=x_dim,
             max_pool=True,
        )
@@ -78,8 +76,8 @@ def fast_adapt(model, batch, ways, shot, query_num, metric=None, device=None):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--max-epoch', type=int, default=250)
-    parser.add_argument('--shot', type=int, default=1)
+    parser.add_argument('--max-epoch', type=int, default=5)
+    parser.add_argument('--shot', type=int, default=3)
     parser.add_argument('--test-way', type=int, default=5)
     parser.add_argument('--test-shot', type=int, default=1)
     parser.add_argument('--test-query', type=int, default=30)
@@ -99,6 +97,7 @@ if __name__ == '__main__':
     model.to(device)
 
     path_data = '~/data'
+    print('Downloading imgs...')
     train_dataset = l2l.vision.datasets.MiniImagenet(
         root=path_data, mode='train')
     valid_dataset = l2l.vision.datasets.MiniImagenet(
@@ -106,6 +105,7 @@ if __name__ == '__main__':
     test_dataset = l2l.vision.datasets.MiniImagenet(
         root=path_data, mode='test')
 
+    print('Preparing train loader...')
     train_dataset = l2l.data.MetaDataset(train_dataset)
     train_transforms = [
         NWays(train_dataset, args.train_way),
@@ -116,6 +116,7 @@ if __name__ == '__main__':
     train_tasks = l2l.data.TaskDataset(train_dataset, task_transforms=train_transforms)
     train_loader = DataLoader(train_tasks, pin_memory=True, shuffle=True)
 
+    print('Preparing val loader...')
     valid_dataset = l2l.data.MetaDataset(valid_dataset)
     valid_transforms = [
         NWays(valid_dataset, args.test_way),
@@ -128,6 +129,7 @@ if __name__ == '__main__':
                                        num_tasks=200)
     valid_loader = DataLoader(valid_tasks, pin_memory=True, shuffle=True)
 
+    print('Preparing test loader...')
     test_dataset = l2l.data.MetaDataset(test_dataset)
     test_transforms = [
         NWays(test_dataset, args.test_way),
@@ -144,6 +146,7 @@ if __name__ == '__main__':
     lr_scheduler = torch.optim.lr_scheduler.StepLR(
         optimizer, step_size=20, gamma=0.5)
 
+    print('Fitting...')
     for epoch in range(1, args.max_epoch + 1):
         model.train()
 
@@ -210,4 +213,3 @@ if __name__ == '__main__':
         n_acc += acc
         print('batch {}: {:.2f}({:.2f})'.format(
             i, n_acc/loss_ctr * 100, acc * 100))
-        

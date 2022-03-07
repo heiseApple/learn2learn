@@ -53,7 +53,7 @@ def main(
         meta_batch_size=32,
         adaptation_steps=1,
         num_iterations=60000,
-        cuda=True,
+        cuda=False,
         seed=42,
 ):
     random.seed(seed)
