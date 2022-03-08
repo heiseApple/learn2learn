@@ -3,7 +3,6 @@
 """
 Example for running few-shot algorithms with the PyTorch Lightning wrappers.
 """
-
 import learn2learn as l2l
 import pytorch_lightning as pl
 from argparse import ArgumentParser
@@ -50,6 +49,9 @@ def main():
         root=args.root,
         data_augmentation=data_augmentation,
     )
+    # taskset contains a namedtuple with attributes `train`, `validation`, 
+    # `test` which correspond to their respective TaskDatasets
+
     episodic_data = EpisodicBatcher(
         tasksets.train,
         tasksets.validation,
@@ -60,6 +62,8 @@ def main():
     # init model
     if args.dataset in ["mini-imagenet", "tiered-imagenet"]:
         model = l2l.vision.models.ResNet12(output_size=args.train_ways)
+    elif args.dataset == 'omniglot':
+        model = l2l.vision.models.OmniglotFC(28 ** 2, args.train_ways)
     else:  # CIFAR-FS, FC100
         model = l2l.vision.models.CNN4(
             output_size=args.train_ways,
@@ -81,6 +85,7 @@ def main():
 
     trainer = pl.Trainer.from_argparse_args(
         args,
+        max_epochs=20,
         gpus=0,
         accumulate_grad_batches=args.meta_batch_size,
         callbacks=[
