@@ -1,0 +1,16 @@
+python main.py \
+		--dataset='mini-imagenet' \
+		--max_epochs=10000 \
+		--min_epochs=10000 \
+		--algorithm=protonet \
+		--distance_metric='euclidean' \
+		--meta_batch_size=8 \
+		--lr=0.005 \
+		--train_shots=5 \
+		--train_ways=20 \
+		--train_queries=15 \
+		--test_shots=5 \
+		--test_ways=5 \
+		--test_queries=5 \
+		--data_parallel \
+		--seed=42

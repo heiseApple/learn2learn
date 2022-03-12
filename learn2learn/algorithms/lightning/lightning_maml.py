@@ -3,6 +3,7 @@
 import numpy as np
 import torch
 import learn2learn as l2l
+from torchmetrics import F1Score
 
 from learn2learn.utils import accuracy
 from learn2learn.algorithms.lightning import LightningEpisodicModule
@@ -142,5 +143,7 @@ class LightningMAML(LightningEpisodicModule):
         # Evaluating the adapted model
         predictions = learner(query)
         valid_error = self.loss(predictions, query_labels)
+        f1 = F1Score(num_classes=ways, average='macro')
+        eval_f1 = f1(predictions, query_labels)
         valid_accuracy = accuracy(predictions, query_labels)
-        return valid_error, valid_accuracy
+        return valid_error, valid_accuracy, eval_f1

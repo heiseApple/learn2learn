@@ -26,12 +26,14 @@ def main():
 
     # add script-specific args
     parser.add_argument("--algorithm", type=str, default="protonet")
-    parser.add_argument("--dataset", type=str, default="mini-imagenet")
+    parser.add_argument("--dataset", type=str, default="omniglot")
     parser.add_argument("--root", type=str, default="~/data")
     parser.add_argument("--meta_batch_size", type=int, default=16)
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
     dict_args = vars(args)
+
+    print(args)
 
     pl.seed_everything(args.seed)
 
@@ -51,6 +53,9 @@ def main():
     )
     # taskset contains a namedtuple with attributes `train`, `validation`, 
     # `test` which correspond to their respective TaskDatasets
+
+    x,y = tasksets.train.sample()
+    print(x.shape)
 
     episodic_data = EpisodicBatcher(
         tasksets.train,

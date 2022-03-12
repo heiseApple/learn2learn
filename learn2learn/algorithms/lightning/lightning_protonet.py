@@ -4,11 +4,13 @@
 """
 import numpy as np
 import torch
+from torchmetrics import F1Score
 
 from torch import nn
 from learn2learn.utils import accuracy
 from learn2learn.nn import PrototypicalClassifier
 from learn2learn.algorithms.lightning import LightningEpisodicModule
+
 
 
 class LightningPrototypicalNetworks(LightningEpisodicModule):
@@ -137,5 +139,7 @@ class LightningPrototypicalNetworks(LightningEpisodicModule):
         self.classifier.fit_(support, support_labels)
         logits = self.classifier(query)
         eval_loss = self.loss(logits, query_labels)
+        f1 = F1Score(num_classes=ways, average='macro')
+        eval_f1 = f1(logits, query_labels)
         eval_accuracy = accuracy(logits, query_labels)
-        return eval_loss, eval_accuracy
+        return eval_loss, eval_accuracy, eval_f1

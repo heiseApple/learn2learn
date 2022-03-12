@@ -70,7 +70,7 @@ class LightningEpisodicModule(LightningModule):
         return parser
 
     def training_step(self, batch, batch_idx):
-        train_loss, train_accuracy = self.meta_learn(
+        train_loss, train_accuracy, train_f1 = self.meta_learn(
             batch, batch_idx, self.train_ways, self.train_shots, self.train_queries
         )
         self.log(
@@ -89,10 +89,18 @@ class LightningEpisodicModule(LightningModule):
             prog_bar=True,
             logger=True,
         )
+        self.log(
+            "train_f1",
+            train_f1.item(),
+            on_step=False,
+            on_epoch=True,
+            prog_bar=False,
+            logger=True,
+        )
         return train_loss
 
     def validation_step(self, batch, batch_idx):
-        valid_loss, valid_accuracy = self.meta_learn(
+        valid_loss, valid_accuracy, valid_f1 = self.meta_learn(
             batch, batch_idx, self.test_ways, self.test_shots, self.test_queries
         )
         self.log(
@@ -111,10 +119,18 @@ class LightningEpisodicModule(LightningModule):
             prog_bar=True,
             logger=True,
         )
+        self.log(
+            "valid_f1",
+            valid_f1.item(),
+            on_step=False,
+            on_epoch=True,
+            prog_bar=False,
+            logger=True,
+        )
         return valid_loss.item()
 
     def test_step(self, batch, batch_idx):
-        test_loss, test_accuracy = self.meta_learn(
+        test_loss, test_accuracy, test_f1 = self.meta_learn(
             batch, batch_idx, self.test_ways, self.test_shots, self.test_queries
         )
         self.log(
@@ -131,6 +147,14 @@ class LightningEpisodicModule(LightningModule):
             on_step=False,
             on_epoch=True,
             prog_bar=True,
+            logger=True,
+        )
+        self.log(
+            "test_f1",
+            test_f1.item(),
+            on_step=False,
+            on_epoch=True,
+            prog_bar=False,
             logger=True,
         )
         return test_loss.item()
