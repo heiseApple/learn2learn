@@ -99,11 +99,11 @@ if __name__ == '__main__':
     path_data = '~/data'
     print('Downloading imgs...')
     train_dataset = l2l.vision.datasets.MiniImagenet(
-        root=path_data, mode='train')
+        root=path_data, mode='train', download=True)
     valid_dataset = l2l.vision.datasets.MiniImagenet(
-        root=path_data, mode='validation')
+        root=path_data, mode='validation', download=True)
     test_dataset = l2l.vision.datasets.MiniImagenet(
-        root=path_data, mode='test')
+        root=path_data, mode='test', download=True)
 
     print('Preparing train loader...')
     train_dataset = l2l.data.MetaDataset(train_dataset)
